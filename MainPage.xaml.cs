@@ -43,7 +43,7 @@ namespace FNGGLockerGeneratorMobile
 
                 SetUserDetails(authData);
 
-                lblOutput.Text = $"\nUsername: {User.UserName}";
+                lblOutput.Text+= $"\nUsername: {User.UserName}";
 
                 var jsonData = QueryProfile(User.AccountId, "athena", User.AccessToken);
                 var jsonDataCc = QueryProfile(User.AccountId, "common_core", User.AccessToken);
@@ -51,7 +51,7 @@ namespace FNGGLockerGeneratorMobile
                 var packsData = await GetPacksData();
                 var builtIns = await GetBuiltIns();
 
-                Console.WriteLine("\nProcessing data");
+                lblOutput.Text += ("\nProcessing data");
                 var profileItems = GetProfileItems(jsonData);
                 var profileItemsCc = GetProfileItems(jsonDataCc);
 
@@ -66,11 +66,11 @@ namespace FNGGLockerGeneratorMobile
                 cosmeticsNames.AddRange(banners);
                 cosmeticsNames.AddRange(builtInEmoteIds);
 
-                lblOutput.Text = "Requesting data from https://fortnite.gg";
+                lblOutput.Text += "\nRequesting data from https://fortnite.gg";
                 var fnggDataRequest = await GetJsonAsync("https://fortnite.gg/api/items.json");
                 var fnggBundleData = await GetJsonAsync("https://fortnite.gg/api/bundles.json");
 
-                lblOutput.Text = "Processing data";
+                lblOutput.Text += "\nProcessing data";
                 var fnggData = ProcessFnggData(fnggDataRequest);
 
                 var athenaCreationDate = GetAthenaCreationDate(jsonData);
@@ -84,12 +84,14 @@ namespace FNGGLockerGeneratorMobile
 
                 var compressed = CompressData($"{athenaCreationDate},{string.Join(",", diff)}");
 
-                lblOutput.Text = "Encoding data";
+                lblOutput.Text += "\nEncoding data";
 
                 var encoded = Base64UrlEncode(compressed).TrimEnd('=');
 
-                LOCKER_URL = $"https://fortnite.gg/locker?data={encoded}";
+                btnLoginButton.IsVisible = false;
+                LOCKER_URL = $"https://fortnite.gg/my-locker?items={encoded}";
                 btnLocker.IsVisible = true;
+                Clipboard.SetTextAsync(LOCKER_URL);
 
             }
         }
